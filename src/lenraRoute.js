@@ -7,20 +7,20 @@ export default class LenraRoute {
         this.json = null;
         this.callback = callback;
         this.route = route;
-        this.channel = this.socket.channel("route:" + this.route, { "mode": "json" });
+        this.channel = socket.channel("route:" + this.route, { "mode": "json" });
 
         this.channel.on("ui", (data) => {
             this.json = data;
             console.log(`New UI from ${this.route}`, this.json)
 
-            this.#notify();
+            this.notify();
         });
 
         this.channel.on("patchUi", (payload) => {
             this.json = applyPatch({ ...this.json }, payload.patch).newDocument;
             console.log(`New Patch from ${this.route}`, payload.patch, this.json)
 
-            this.#notify();
+            this.notify();
         });
 
         this.channel.join()
@@ -37,7 +37,7 @@ export default class LenraRoute {
         this.channel.push("run", call)
     }
 
-    #notify() {
+    notify() {
         this.callback(this.json);
     }
 

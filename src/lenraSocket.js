@@ -1,13 +1,15 @@
 import { Socket } from 'phoenix-channels';
-import RouteChannel from './RouteChannel';
+import LenraRoute from './LenraRoute';
 
 
 
 export default class LenraSocket {
     constructor(appName, opts) {
         let isProd = opts.prod || false;
-        let url = isProd ? "ws://api.lenra.io/socket" : "ws://localhost:4000/socket";
+        let url = opts.url ?? (isProd ? "ws://api.lenra.io/socket" : "ws://localhost:4001/socket");
+        let token = opts.token ?? "SFMyNTY.g2gDdAAAAAFkAAVzY29wZW0AAAANYXBwOndlYnNvY2tldG4GAGFcWwOKAWIAAVGA.eIKY-EJthL5EXoPLVTV9EHW3sqAXFexn6tZGwtldz4Y";
         let params = {
+            token: token,
             app: appName,
             context: {},
         }
@@ -15,8 +17,8 @@ export default class LenraSocket {
         this.socket.connect();
     }
 
-    channel(route) {
-        const channel = new RouteChannel(this.socket, route);
+    channel(route, callback) {
+        const channel = new LenraRoute(this.socket, route, callback);
         return channel;
     }
 }
