@@ -1,24 +1,41 @@
 import { Socket } from 'phoenix-channels';
 import LenraRoute from './LenraRoute';
+import { rejects } from 'assert';
 
 
 
 export default class LenraSocket {
-    constructor(appName, opts) {
-        let isProd = opts.prod || false;
-        let url = opts.url ?? (isProd ? "ws://api.lenra.io/socket" : "ws://localhost:4001/socket");
-        let token = opts.token ?? "SFMyNTY.g2gDdAAAAAFkAAVzY29wZW0AAAANYXBwOndlYnNvY2tldG4GAGFcWwOKAWIAAVGA.eIKY-EJthL5EXoPLVTV9EHW3sqAXFexn6tZGwtldz4Y";
+    constructor(appName, token, wsUri) {
         let params = {
             token: token,
             app: appName,
             context: {},
         }
-        this.socket = new Socket(url, { params: params });
-        this.socket.connect();
+        this.socket = new Socket(wsUri, { params: params });
+    }
+
+    connect() {
+        return new Promise((resolve, reject) => {
+            this.socket.onOpen(() => {
+                resolve();
+            });
+            this.socket.onError(() => {
+                reject();
+            });
+            this.socket.connect();
+        });
+    }
+
+    close() {
+        if (this.socket) this.socket.close();
     }
 
     channel(route, callback) {
         const channel = new LenraRoute(this.socket, route, callback);
         return channel;
+    }
+
+    isConnected() {
+        return !!this.socket && this.connected;
     }
 }
