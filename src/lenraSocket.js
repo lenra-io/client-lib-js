@@ -1,6 +1,5 @@
 import { Socket } from 'phoenix-channels';
 import LenraRoute from './LenraRoute';
-import { rejects } from 'assert';
 
 
 
@@ -9,7 +8,6 @@ export default class LenraSocket {
         let params = {
             token: token,
             app: appName,
-            context: {},
         }
         this.socket = new Socket(wsUri, { params: params });
     }
