@@ -6,7 +6,8 @@
         "strict": true,
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "declaration": true
     },
     "include": [
         "./src/**/*"

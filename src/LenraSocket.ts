@@ -1,8 +1,6 @@
 import { Socket } from 'phoenix-channels';
 import LenraRoute, { Callback } from './LenraRoute';
 
-
-
 export default class LenraSocket {
     socket: Socket;
 
