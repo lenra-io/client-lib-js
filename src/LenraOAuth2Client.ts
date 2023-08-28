@@ -2,10 +2,27 @@ import { OAuth2Client, generateCodeVerifier } from '@badgateway/oauth2-client';
 import OAuthPopup from "./OAuthPopup";
 
 export default class LenraOAuth2Client {
-    constructor(clientId, redirectUri, scope, { isProd, server, tokenEndpoint, authorizationEndpoint }) {
-        server = server ?? (isProd ? "https://auth.lenra.io" : "http://localhost:4444");
-        tokenEndpoint = tokenEndpoint ?? '/oauth2/token';
-        authorizationEndpoint = authorizationEndpoint ?? '/oauth2/auth';
+    client: OAuth2Client;
+    redirectUri: string;
+    scope: string[];
+    popup?: OAuthPopup;
+
+
+    constructor(
+        clientId: string,
+        redirectUri: string,
+        scope: string[],
+        opts: {
+            isProd: boolean;
+            server?: string;
+            tokenEndpoint?: string;
+            authorizationEndpoint?: string;
+        }
+    ) {
+        const server = opts.server ?? (opts.isProd ? "https://auth.lenra.io" : "http://localhost:4444");
+        const tokenEndpoint = opts.tokenEndpoint ?? '/oauth2/token';
+        const authorizationEndpoint = opts.authorizationEndpoint ?? '/oauth2/auth';
+
         this.client = new OAuth2Client({
             server,
             clientId,
@@ -15,7 +32,7 @@ export default class LenraOAuth2Client {
 
         this.redirectUri = redirectUri;
         this.scope = scope;
-        this.popup = null;
+        this.popup = undefined;
     }
 
     async authenticate() {

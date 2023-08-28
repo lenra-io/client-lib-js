@@ -1,12 +1,13 @@
 export default class OAuthPopup {
-    constructor(url) {
-        this.id = "LenraOauth2Popup";
+    id: string = "LenraOauth2Popup";
+    url: string;
+    popupOptions: string = "popup=true";
+    iid?: number = undefined;
+    promise?: Promise<string> = undefined;
+    window: Window | null = null;
+
+    constructor(url: string) {
         this.url = url;
-        this.popupOptions = "popup=true";
-        this.response = null;
-        this.window = null;
-        this.iid = null;
-        this.promise = null;
     }
 
     open() {
@@ -15,7 +16,7 @@ export default class OAuthPopup {
     }
 
     startPolling() {
-        this.promise = new Promise((resolve, reject) => {
+        this.promise = new Promise<string>((resolve, reject) => {
             this.iid = window.setInterval(() => {
                 // The popup is closed
                 if (!this.window || this.window.closed !== false) {
@@ -39,13 +40,13 @@ export default class OAuthPopup {
 
     close() {
         this.cancel();
-        this.window.close();
+        this.window?.close();
     }
 
     cancel() {
         if (this.iid) {
             window.clearInterval(this.iid);
-            this.iid = null;
+            this.iid = undefined;
         }
     }
 }

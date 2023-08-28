@@ -1,10 +1,12 @@
 import { Socket } from 'phoenix-channels';
-import LenraRoute from './LenraRoute';
+import LenraRoute, { Callback } from './LenraRoute';
 
 
 
 export default class LenraSocket {
-    constructor(appName, token, wsUri) {
+    socket: Socket;
+
+    constructor(appName: string, token: string, wsUri: string) {
         let params = {
             token: token,
             app: appName,
@@ -13,7 +15,7 @@ export default class LenraSocket {
     }
 
     connect() {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             this.socket.onOpen(() => {
                 resolve();
             });
@@ -28,12 +30,12 @@ export default class LenraSocket {
         if (this.socket) this.socket.close();
     }
 
-    channel(route, callback) {
+    channel(route: string, callback: Callback) {
         const channel = new LenraRoute(this.socket, route, callback);
         return channel;
     }
 
     isConnected() {
-        return !!this.socket && this.connected;
+        return !!this.socket;
     }
 }

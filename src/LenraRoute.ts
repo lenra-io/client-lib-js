@@ -1,10 +1,19 @@
 import { applyPatch } from 'fast-json-patch';
+import { Channel, Socket } from 'phoenix-channels';
 
-
+export type Callback = (json: unknown) => void;
+export type ListenerCall = {
+    code: string,
+    event?: object,
+}
 
 export default class LenraRoute {
-    constructor(socket, route, callback) {
-        this.json = null;
+    json?: object = undefined;
+    callback: Callback;
+    route: string;
+    channel: Channel;
+
+    constructor(socket: Socket, route: string, callback: Callback) {
         this.callback = callback;
         this.route = route;
         this.channel = socket.channel("route:" + this.route, { "mode": "json" });
@@ -29,16 +38,17 @@ export default class LenraRoute {
 
     }
 
-    callListener(listenerCall, event = {}) {
+    callListener(listenerCall: ListenerCall) {
         let call = {
-            ...listenerCall,
-            event: event
+            ...listenerCall
         }
         this.channel.push("run", call)
     }
 
     notify() {
-        this.callback(this.json);
+        if (!!this.json) {
+            this.callback(this.json!);
+        }
     }
 
 
