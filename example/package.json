@@ -1,11 +1,18 @@
 {
-  "name": "lenra-react-example",
+  "name": "lenra-example",
   "homepage": ".",
   "version": "0.0.0",
   "private": true,
-  "scripts": {},
+  "sourceType": "module",
+  "scripts": {
+    "start": "http-server -p 3030",
+    "build": "browserify src/index.js -o dist/bundle.js"
+  },
   "dependencies": {
     "lenra-js": "file:.."
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "browserify": "^17.0.0",
+    "http-server": "^14.1.1"
+  }
 }
