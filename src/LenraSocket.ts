@@ -1,15 +1,27 @@
 import { Socket } from 'phoenix-channels';
 import LenraRoute, { Callback } from './LenraRoute';
 
+export type LenraSocketOpts = {
+    appName: string,
+    token: string,
+    isProd?: boolean
+    wsUri?: string,
+}
+
 export default class LenraSocket {
     socket: Socket;
+    opts: LenraSocketOpts;
 
-    constructor(appName: string, token: string, wsUri: string) {
+    constructor(opts: LenraSocketOpts) {
+        opts.isProd = opts.isProd ?? false;
+        opts.wsUri = opts.wsUri ?? (opts.isProd ? "wss://api.lenra.io/socket" : "wss://api.lenra.io/socket");
+        this.opts = opts;
+
         let params = {
-            token: token,
-            app: appName,
+            token: opts.token,
+            app: opts.appName,
         }
-        this.socket = new Socket(wsUri, { params: params });
+        this.socket = new Socket(opts.wsUri, { params: params });
     }
 
     connect() {
@@ -28,9 +40,8 @@ export default class LenraSocket {
         if (this.socket) this.socket.close();
     }
 
-    channel(route: string, callback: Callback) {
-        const channel = new LenraRoute(this.socket, route, callback);
-        return channel;
+    route(routeName: string, callback: Callback) {
+        return new LenraRoute(this.socket, routeName, callback);;
     }
 
     isConnected() {

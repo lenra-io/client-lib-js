@@ -1,58 +1,65 @@
 import { OAuth2Client, generateCodeVerifier } from '@badgateway/oauth2-client';
 import OAuthPopup from "./OAuthPopup";
 
+export type LenraOAuth2Opts = {
+    clientId: string,
+    redirectUri: string,
+    scope: string[],
+    isProd?: boolean,
+    server?: string,
+    tokenEndpoint?: string,
+    authorizationEndpoint?: string,
+}
+
 export default class LenraOAuth2Client {
     client: OAuth2Client;
-    redirectUri: string;
-    scope: string[];
     popup?: OAuthPopup;
+    opts: LenraOAuth2Opts;
 
 
     constructor(
-        clientId: string,
-        redirectUri: string,
-        scope: string[],
-        opts: {
-            isProd: boolean;
-            server?: string;
-            tokenEndpoint?: string;
-            authorizationEndpoint?: string;
-        }
+        opts: LenraOAuth2Opts,
     ) {
-        const server = opts.server ?? (opts.isProd ? "https://auth.lenra.io" : "http://localhost:4444");
-        const tokenEndpoint = opts.tokenEndpoint ?? '/oauth2/token';
-        const authorizationEndpoint = opts.authorizationEndpoint ?? '/oauth2/auth';
+        opts.isProd = opts.isProd ?? false;
+        opts.server = opts.server ?? (opts.isProd ? "https://auth.lenra.io" : "http://localhost:4444");
+        opts.tokenEndpoint = opts.tokenEndpoint ?? "/oauth2/token";
+        opts.authorizationEndpoint = opts.authorizationEndpoint ?? "/oauth2/auth";
+        this.opts = opts;
+
 
         this.client = new OAuth2Client({
-            server,
-            clientId,
-            tokenEndpoint,
-            authorizationEndpoint,
+            server: opts.server,
+            clientId: opts.clientId,
+            tokenEndpoint: opts.tokenEndpoint,
+            authorizationEndpoint: opts.authorizationEndpoint,
         });
 
-        this.redirectUri = redirectUri;
-        this.scope = scope;
         this.popup = undefined;
     }
 
     async authenticate() {
-        const codeVerifier = await generateCodeVerifier();
-        const authUrl = await this.client.authorizationCode.getAuthorizeUri({
-            redirectUri: this.redirectUri,
-            codeVerifier,
-            scope: this.scope,
-        });
-
-        this.popup = new OAuthPopup(authUrl);
-        const popupLocation = await this.popup.open();
-        const token = await this.client.authorizationCode.getTokenFromCodeRedirect(
-            popupLocation,
-            {
-                redirectUri: this.redirectUri,
+        let access_token = sessionStorage.getItem("access_token")
+        if (access_token === null) {
+            const codeVerifier = await generateCodeVerifier();
+            const authUrl = await this.client.authorizationCode.getAuthorizeUri({
+                redirectUri: this.opts.redirectUri,
                 codeVerifier,
-            }
-        );
-        return token;
+                scope: this.opts.scope,
+            });
+
+            this.popup = new OAuthPopup(authUrl);
+            const popupLocation = await this.popup.open();
+            const token = await this.client.authorizationCode.getTokenFromCodeRedirect(
+                popupLocation,
+                {
+                    redirectUri: this.opts.redirectUri,
+                    codeVerifier,
+                }
+            );
+            sessionStorage.setItem("access_token", token.accessToken);
+            access_token = token.accessToken;
+        }
+        return access_token;
     }
 
 }
