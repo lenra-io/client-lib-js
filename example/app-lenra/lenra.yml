@@ -25,6 +25,3 @@ generator:
       - "**"
       - "!/*.json"
       - "!/src/"
-dev:
-  devtool:
-    tag: alpha
