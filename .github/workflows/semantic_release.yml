@@ -1,0 +1,41 @@
+name: Release
+on:
+  push:
+    branches:
+      - main
+      - rc
+      - beta
+      - alpha
+      - "*.x"
+
+jobs:
+  get-next-version:
+    uses: lenra-io/github-actions/.github/workflows/get-version.yml@main
+    
+  release:
+    needs: [get-next-version]
+    if: ${{ needs.get-next-version.outputs.will-release == 'true' }}
+    uses: lenra-io/github-actions/.github/workflows/release.yml@main
+  publish:
+    name: publish
+    needs: [get-next-version]
+    if: ${{ needs.get-next-version.outputs.will-release == 'true' }}
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.get-next-version.outputs.version }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@lenra'
+      - run: npm version "${{ env.VERSION }}" --no-git-tag-version
+      - run: npm ci
+      - run: npm run build
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

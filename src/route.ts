@@ -1,7 +1,7 @@
 import { applyPatch } from 'fast-json-patch';
-import { Channel, Socket } from 'phoenix-channels';
+import { Channel, Socket } from 'phoenix';
 
-export type Callback = (json: unknown) => void;
+export type Callback = (json: any) => void;
 export type ListenerCall = {
     code: string,
     event?: object,
@@ -39,10 +39,14 @@ export default class LenraRoute {
     }
 
     callListener(listenerCall: ListenerCall) {
-        let call = {
-            ...listenerCall
-        }
-        this.channel.push("run", call)
+        return new Promise<void>((resolve, reject) => {
+            let call = {
+                ...listenerCall
+            }
+            this.channel.push("run", call)
+                .receive("ok", (_) => { resolve() })
+                .receive("error", (reasons) => { console.error(reasons); reject(new Error("An error occured while running the listener")) });
+        });
     }
 
     notify() {

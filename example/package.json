@@ -6,13 +6,13 @@
   "sourceType": "module",
   "scripts": {
     "start": "http-server -p 3030",
-    "build": "browserify src/index.js -o dist/bundle.js"
+    "build": "esbuild src/index.js --bundle --outfile=dist/bundle.js"
   },
   "dependencies": {
-    "lenra-js": "file:.."
+    "@lenra/client": "file:.."
   },
   "devDependencies": {
-    "browserify": "^17.0.0",
+    "esbuild": "^0.19.2",
     "http-server": "^14.1.1"
   }
 }

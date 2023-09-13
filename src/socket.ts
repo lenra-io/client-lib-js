@@ -1,11 +1,10 @@
-import { Socket } from 'phoenix-channels';
-import LenraRoute, { Callback } from './LenraRoute';
+import { Socket } from 'phoenix';
+import LenraRoute, { Callback } from './route.js';
 
 export type LenraSocketOpts = {
     appName: string,
     token: string,
-    isProd?: boolean
-    wsUri?: string,
+    socketEndpoint: string,
 }
 
 export default class LenraSocket {
@@ -13,15 +12,13 @@ export default class LenraSocket {
     opts: LenraSocketOpts;
 
     constructor(opts: LenraSocketOpts) {
-        opts.isProd = opts.isProd ?? false;
-        opts.wsUri = opts.wsUri ?? (opts.isProd ? "wss://api.lenra.io/socket" : "wss://api.lenra.io/socket");
         this.opts = opts;
 
         let params = {
             token: opts.token,
             app: opts.appName,
         }
-        this.socket = new Socket(opts.wsUri, { params: params });
+        this.socket = new Socket(opts.socketEndpoint, { params: params });
     }
 
     connect() {
@@ -33,11 +30,12 @@ export default class LenraSocket {
                 reject();
             });
             this.socket.connect();
+            return this;
         });
     }
 
     close() {
-        if (this.socket) this.socket.close();
+        if (this.socket) this.socket.disconnect();
     }
 
     route(routeName: string, callback: Callback) {
