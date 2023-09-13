@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport">
+  <title>Document</title>
+</head>
+<body>
+<script>
+  window.onload = function() {
+      window.opener.postMessage(window.location.href, `${window.location.protocol}//${window.location.host}`);
+  }
+</script>
+</body>
+</html>

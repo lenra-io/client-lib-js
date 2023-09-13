@@ -1,14 +1,11 @@
 import { OAuth2Client, generateCodeVerifier } from '@badgateway/oauth2-client';
-import OAuthPopup from "./OAuthPopup";
 
 export type LenraOAuth2Opts = {
     clientId: string,
     redirectUri: string,
-    scope: string[],
-    isProd?: boolean,
-    server?: string,
-    tokenEndpoint?: string,
-    authorizationEndpoint?: string,
+    scopes: string[],
+    authorizeUrl: string,
+    tokenUrl: string,
 }
 
 export default class LenraOAuth2Client {
@@ -20,18 +17,14 @@ export default class LenraOAuth2Client {
     constructor(
         opts: LenraOAuth2Opts,
     ) {
-        opts.isProd = opts.isProd ?? false;
-        opts.server = opts.server ?? (opts.isProd ? "https://auth.lenra.io" : "http://localhost:4444");
-        opts.tokenEndpoint = opts.tokenEndpoint ?? "/oauth2/token";
-        opts.authorizationEndpoint = opts.authorizationEndpoint ?? "/oauth2/auth";
         this.opts = opts;
 
 
         this.client = new OAuth2Client({
-            server: opts.server,
+            // server: opts.server,
             clientId: opts.clientId,
-            tokenEndpoint: opts.tokenEndpoint,
-            authorizationEndpoint: opts.authorizationEndpoint,
+            tokenEndpoint: opts.tokenUrl,
+            authorizationEndpoint: opts.authorizeUrl,
         });
 
         this.popup = undefined;
@@ -44,7 +37,7 @@ export default class LenraOAuth2Client {
             const authUrl = await this.client.authorizationCode.getAuthorizeUri({
                 redirectUri: this.opts.redirectUri,
                 codeVerifier,
-                scope: this.opts.scope,
+                scope: this.opts.scopes,
             });
 
             this.popup = new OAuthPopup(authUrl);
@@ -62,4 +55,47 @@ export default class LenraOAuth2Client {
         return access_token;
     }
 
+}
+
+class OAuthPopup {
+    id: string = "LenraOauth2Popup";
+    url: string;
+    popupOptions: string = "popup=true";
+    iid?: number = undefined;
+    promise?: Promise<string> = undefined;
+    window: Window | null = null;
+
+    constructor(url: string) {
+        this.url = url;
+    }
+
+    open() {
+        this.window = window.open(this.url, this.id, this.popupOptions);
+        return this.listenMessage();
+    }
+
+    listenMessage() {
+        const self: OAuthPopup = this;
+        return new Promise<string>((resolve, reject) => {
+            const handleMessage = (event: MessageEvent) => {
+                const href = self.window!.location.href;
+                window.removeEventListener('message', handleMessage);
+                self.close();
+                resolve(href);
+            };
+            window.addEventListener('message', handleMessage);
+        });
+    }
+
+    close() {
+        this.cancel();
+        this.window?.close();
+    }
+
+    cancel() {
+        if (this.iid) {
+            window.clearInterval(this.iid);
+            this.iid = undefined;
+        }
+    }
 }

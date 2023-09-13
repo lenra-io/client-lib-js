@@ -1,21 +1,39 @@
 {
-  "name": "lenra-js",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@lenra/client",
+  "types": "dist/index.d.ts",
   "main": "dist/index.js",
+  "version": "0.0.0",
+  "description": "Create your JavaScript application with a Lenra backend.",
+  "type": "module",
+  "keywords": [
+    "Lenra",
+    "app",
+    "application",
+    "lib",
+    "client"
+  ],
   "scripts": {
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\""
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@badgateway/oauth2-client": "^2.2.3",
     "fast-json-patch": "^3.1.1",
-    "phoenix-channels": "^1.0.0"
+    "phoenix": "^1.7.7"
   },
   "devDependencies": {
     "@types/fast-json-patch": "^1.1.5",
+    "@types/phoenix": "^1.6.1",
     "typescript": "^5.2.2"
-  }
+  },
+  "author": "Lenra",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lenra-io/client-lib-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lenra-io/client-lib-js/issues"
+  },
+  "homepage": "https://github.com/lenra-io/client-lib-js.git#readme"
 }
