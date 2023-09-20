@@ -15,8 +15,7 @@ generator:
     adds:
       - .
     cmd:
-      - node
-      - node_modules/@lenra/app-server/dist/bin/app-lenra.js
+      - npm start
     envs:
       NODE_ENV: production
     ports:

@@ -46,10 +46,30 @@ Installation instructions can be found here https://github.com/lenra-io/lenra_cl
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-To run the Javascript template just run:
+To have IDE auto-completion, you will have to install the dependencies of the project. To do so, run the following command:
+
+```console
+npm install
+```
+
+This will also index the views and listeners of your application. You can re-index them by running:
+```console
+npm run index
+```
+
+
+To start the JavaScript template just run:
+
 ```console
 lenra dev
 ```
+
+### Classique client
+
+You can use one of the client libs to create a custom client for your application.
+You can find the client libs here: https://github.com/search?q=topic%3Alenra+topic%3Aclient+topic%3Alib&sort=stargazers&type=repositories
+
+### Lenra client (beta)
 
 You can then access the application by opening [`localhost:4000`](http://localhost:4000) on your web browser. 
 
