@@ -14,11 +14,11 @@ app.connect().then(() => {
     counters.forEach((counter) => {
         const button = counter.querySelector("button");
         const output = counter.querySelector("output");
-        const route = app.route(`/${counter.id}`, (data) => {
+        const route = app.route(`/counter/${counter.id}`, (data) => {
             output.textContent = data.value;
             button.onclick = () => {
                 output.classList.add("loading");
-                route.callListener(data.increment).then(() => {
+                route.callListener(data.onIncrement).then(() => {
                     output.classList.remove("loading");
                 });
             };

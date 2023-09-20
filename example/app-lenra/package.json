@@ -5,15 +5,15 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "app-lenra",
-    "index": "app-lenra index",
+    "start": "node node_modules/@lenra/app/dist/bin/app-lenra.js start",
+    "index": "node node_modules/@lenra/app/dist/bin/app-lenra.js index",
+    "postinstall": "npm run index",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
   "keywords": [],
   "author": "Lenra",
   "license": "MIT",
   "dependencies": {
-    "@lenra/app-server": "^1.0.0-beta.1",
-    "@lenra/components": "^1.0.0-beta.5"
+    "@lenra/app": "^1.0.0-beta.12"
   }
 }

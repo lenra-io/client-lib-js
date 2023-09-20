@@ -1,5 +1,7 @@
-import { applyPatch } from 'fast-json-patch';
+import jsonPatch from 'fast-json-patch';
 import { Channel, Socket } from 'phoenix';
+
+const { applyPatch } = jsonPatch;
 
 export type Callback = (json: any) => void;
 export type ListenerCall = {
