@@ -2,7 +2,7 @@ import { Socket } from 'phoenix';
 import LenraRoute, { Callback } from './route.js';
 
 export type LenraSocketOpts = {
-    appName: string,
+    appName?: string,
     token: string,
     socketEndpoint: string,
 }

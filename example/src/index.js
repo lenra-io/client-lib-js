@@ -1,7 +1,6 @@
 import { LenraApp } from '@lenra/client';
 
 const app = new LenraApp({
-    appName: "Example Client",
     clientId: "XXX-XXX-XXX",
 });
 
@@ -18,7 +17,7 @@ app.connect().then(() => {
             output.textContent = data.value;
             button.onclick = () => {
                 output.classList.add("loading");
-                route.callListener(data.onIncrement).then(() => {
+                route.callListener({code: data.onIncrement.code, event: {value: "custom value"}}).then(() => {
                     output.classList.remove("loading");
                 });
             };
