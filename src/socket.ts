@@ -4,6 +4,7 @@ import LenraRoute, { Callback } from './route.js';
 export type LenraSocketOpts = {
     appName?: string,
     token: string,
+    additionalParams?: Record<string, any>,
     socketEndpoint: string,
 }
 
@@ -15,6 +16,7 @@ export default class LenraSocket {
         this.opts = opts;
 
         let params = {
+            ...opts.additionalParams,
             token: opts.token,
             app: opts.appName,
         }

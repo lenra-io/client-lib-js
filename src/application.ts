@@ -32,11 +32,12 @@ export default class LenraApp {
         this.lenraOAuth2Client = new LenraOAuth2Client(oAuth2Opts);
     }
 
-    async connect() {
+    async connect(params?: Record<string, any>) {
         const accessToken = await this.lenraOAuth2Client.authenticate();
         const socketOpts: LenraSocketOpts = {
             appName: this.lenraAppOpts.appName,
             token: accessToken,
+            additionalParams: params,
             socketEndpoint: this.lenraAppOpts.socketEndpoint ?? (this.lenraAppOpts.isProd ? "wss://api.lenra.io/socket" : "ws://localhost:4001/socket"),
         }
         this.lenraSocket = new LenraSocket(socketOpts);
