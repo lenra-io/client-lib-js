@@ -18,7 +18,7 @@ export default class LenraApp {
     lenraSocket?: LenraSocket;
 
     constructor(opts: LenraAppOpts) {
-        opts.oauthBaseUri = opts.oauthBaseUri ?? (opts.isProd ? "https://api.lenra.io" : "http://localhost:4444");
+        opts.oauthBaseUri = opts.oauthBaseUri ?? (opts.isProd ? "https://auth.lenra.io" : "http://localhost:4444");
         opts.redirectUri = opts.redirectUri ?? window.location.origin + "/redirect.html";
         opts.scopes = opts.scopes ?? ["app:websocket"];
         this.lenraAppOpts = opts;
