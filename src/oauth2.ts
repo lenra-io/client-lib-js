@@ -12,6 +12,7 @@ export default class LenraOAuth2Client {
     client: OAuth2Client;
     popup?: OAuthPopup;
     opts: LenraOAuth2Opts;
+    private state: string = (Math.random() + 1).toString(36).substring(2);
 
 
     constructor(
@@ -38,6 +39,7 @@ export default class LenraOAuth2Client {
                 redirectUri: this.opts.redirectUri,
                 codeVerifier,
                 scope: this.opts.scopes,
+                state: this.state,
             });
 
             this.popup = new OAuthPopup(authUrl);
@@ -47,6 +49,7 @@ export default class LenraOAuth2Client {
                 {
                     redirectUri: this.opts.redirectUri,
                     codeVerifier,
+                    state: this.state,
                 }
             );
             sessionStorage.setItem("access_token", token.accessToken);
