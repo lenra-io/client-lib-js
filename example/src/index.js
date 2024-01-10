@@ -8,6 +8,14 @@ console.log("connecting...");
 app.connect().then(() => {
     console.log("Connected !");
 
+    const disconnectButton = document.createElement("button");
+    disconnectButton.textContent = "Disconnect";
+    disconnectButton.onclick = () => {
+        app.disconnect();
+        disconnectButton.remove();
+    };
+    document.body.appendChild(disconnectButton);
+
     const counters = document.querySelectorAll(".counter");
 
     counters.forEach((counter) => {

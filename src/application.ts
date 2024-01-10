@@ -52,6 +52,8 @@ export default class LenraApp {
 
     disconnect() {
         this.lenraSocket?.close();
+        sessionStorage.removeItem("access_token");
+        // TODO: call the OAuth2 logout endpoint
     }
 
 }
