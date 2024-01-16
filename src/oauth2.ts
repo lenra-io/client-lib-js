@@ -1,11 +1,13 @@
 import { OAuth2Client, generateCodeVerifier } from '@badgateway/oauth2-client';
 
-export type LenraOAuth2Opts = {
+export interface LenraOAuth2Opts {
     clientId: string,
     redirectUri: string,
     scopes: string[],
     authorizeUrl: string,
     tokenUrl: string,
+    revokeUrl: string,
+    logoutUrl: string,
 }
 
 export default class LenraOAuth2Client {
@@ -58,12 +60,38 @@ export default class LenraOAuth2Client {
         return access_token;
     }
 
+    async revoke() {
+        const access_token = sessionStorage.getItem("access_token")
+        if (access_token !== null) {
+            sessionStorage.removeItem("access_token");
+            await fetch(this.opts.revokeUrl, {
+                method: "POST",
+                body: JSON.stringify({ 
+                    client_id: this.opts.clientId,
+                    token: access_token 
+                }),
+            });
+        }
+    }
+
+    disconnect() {
+        return new Promise((resolve, reject) => {
+            let close = false;
+            const onDisconnect = () => {
+                if (close) resolve(undefined);
+                else close = true;
+            };
+            const popup = window.open(this.opts.logoutUrl, "Logout Popup");
+            popup!.onclose = onDisconnect;
+            this.revoke().then(onDisconnect).catch(reject);
+        });
+    }
 }
 
 class OAuthPopup {
     id: string = "LenraOauth2Popup";
     url: string;
-    popupOptions: string = "popup=true";
+    popupOptions: string = "";
     iid?: number = undefined;
     promise?: Promise<string> = undefined;
     window: Window | null = null;
