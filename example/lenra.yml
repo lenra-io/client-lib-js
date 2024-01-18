@@ -1,4 +1,4 @@
-componentsApi: "1.0"
+path: app-lenra/
 generator:
   dofigen:
     builders:

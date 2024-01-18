@@ -28,6 +28,8 @@ export default class LenraApp {
             scopes: opts.scopes,
             authorizeUrl: opts.oauthBaseUri + "/oauth2/auth",
             tokenUrl: opts.oauthBaseUri + "/oauth2/token",
+            revokeUrl: opts.oauthBaseUri + "/oauth2/revoke",
+            logoutUrl: opts.oauthBaseUri + "/oauth2/sessions/logout",
         }
         this.lenraOAuth2Client = new LenraOAuth2Client(oAuth2Opts);
     }
@@ -50,8 +52,9 @@ export default class LenraApp {
         return this.lenraSocket.route(routeName, callback);
     }
 
-    disconnect() {
+    async disconnect() {
         this.lenraSocket?.close();
+        await this.lenraOAuth2Client.disconnect();
     }
 
 }
