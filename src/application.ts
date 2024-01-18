@@ -46,7 +46,7 @@ export default class LenraApp {
         return this.lenraSocket.connect().then(() => this.lenraSocket!);
     }
 
-    route(routeName: string, callback: Callback) {
+    route<T>(routeName: string, callback: Callback<T>) {
         if (!this.lenraSocket) throw new Error("Lenra app is not connected. Please call the connect function first.");
 
         return this.lenraSocket.route(routeName, callback);

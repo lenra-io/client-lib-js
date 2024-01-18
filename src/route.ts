@@ -1,35 +1,42 @@
-import jsonPatch from 'fast-json-patch';
+import { applyPatch } from 'fast-json-patch';
 import { Channel, Socket } from 'phoenix';
 
-const { applyPatch } = jsonPatch;
 
-export type Callback = (json: any) => void;
-export type ListenerCall = {
+export type Callback<T = any> = (json: T) => void;
+export type ListenerCall<T = any> = {
     code: string,
-    event?: object,
+    event?: T,
 }
 
-export default class LenraRoute {
-    json?: object = undefined;
-    callback: Callback;
-    route: string;
-    channel: Channel;
+export interface Listener<T = any> {
+    code: string;
+    call(event?: T):Promise<void>;
+}
 
-    constructor(socket: Socket, route: string, callback: Callback) {
+export default class LenraRoute<T = any> {
+    json?: T
+    parsedJson?: T
+    callback: Callback<T>
+    route: string
+    channel: Channel
+
+    constructor(socket: Socket, route: string, callback: Callback<T>) {
         this.callback = callback;
         this.route = route;
         this.channel = socket.channel("route:" + this.route, { "mode": "json" });
 
         this.channel.on("ui", (data) => {
             this.json = data;
-            console.log(`New UI from ${this.route}`, this.json)
+            console.log(`New UI from ${this.route}`, this.json);
+            this.parsedJson = parseDataListeners(this, this.json);
 
             this.notify();
         });
 
         this.channel.on("patchUi", (payload) => {
-            this.json = applyPatch({ ...this.json }, payload.patch).newDocument;
-            console.log(`New Patch from ${this.route}`, payload.patch, this.json)
+            this.json = applyPatch({ ...this.json }, payload.patch).newDocument as T;
+            console.log(`New Patch from ${this.route}`, payload.patch, this.json);
+            this.parsedJson = parseDataListeners(this, this.json);
 
             this.notify();
         });
@@ -52,14 +59,38 @@ export default class LenraRoute {
     }
 
     notify() {
-        if (!!this.json) {
-            this.callback(this.json!);
+        if (!!this.parsedJson) {
+            this.callback(this.parsedJson!);
         }
     }
-
 
     close() {
         console.log(`Leaving the channel ${this.route}`)
         this.channel.leave();
     }
+}
+
+function parseDataListeners(route: LenraRoute, data: any): any {
+    if (data._type === "listener" && "code" in data) {
+        // create Listener
+        if (!("call" in data)) {
+            const code = data.code;
+            Object.defineProperty(data, "call", {
+                enumerable: false,
+                writable: false,
+                configurable: false,
+                value: (event?: any) => route.callListener({code, event})
+            });
+        }
+        return data;
+    }
+    if (data instanceof Array) {
+        return data.map((d: any) => parseDataListeners(route, d));
+    }
+    if (data instanceof Object) {
+        for (const [key, value] of Object.entries(data)) {
+            data[key] = parseDataListeners(route, value);
+        }
+    }
+    return data;
 }

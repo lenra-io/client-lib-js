@@ -1,4 +1,4 @@
-import { LenraApp } from '@lenra/client';
+import { LenraApp, Listener } from '@lenra/client';
 
 const app = new LenraApp({
     clientId: "XXX-XXX-XXX",
@@ -21,11 +21,15 @@ app.connect().then(() => {
     counters.forEach((counter) => {
         const button = counter.querySelector("button");
         const output = counter.querySelector("output");
-        const route = app.route(`/counter/${counter.id}`, (data) => {
+        app.route(`/counter/${counter.id}`, 
+            /**
+             * @param {{value: number, onIncrement: Listener<{value: string}>}} data 
+             */
+            (data) => {
             output.textContent = data.value;
             button.onclick = () => {
                 output.classList.add("loading");
-                route.callListener({code: data.onIncrement.code, event: {value: "custom value"}}).then(() => {
+                data.onIncrement.call({value: "custom value"}).then(() => {
                     output.classList.remove("loading");
                 });
             };

@@ -18,15 +18,15 @@
 <br />
 <div align="center">
 
-<h3 align="center">Template Javascript</h3>
+<h3 align="center">Template TypeScript based on Bun.sh</h3>
 
   <p align="center">
-    This template provides just enough to get started with your Javascript application.
+    This template provides just enough to get started with your TypeScript application.
     <br />
     <br />
-    <a href="https://github.com/lenra-io/template-javascript/issues">Report Bug</a>
+    <a href="https://github.com/lenra-io/template-bun-ts/issues">Report Bug</a>
     ·
-    <a href="https://github.com/lenra-io/template-javascript/issues">Request Feature</a>
+    <a href="https://github.com/lenra-io/template-bun-ts/issues">Request Feature</a>
   </p>
 </div>
 
@@ -46,30 +46,10 @@ Installation instructions can be found here https://github.com/lenra-io/lenra_cl
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-To have IDE auto-completion, you will have to install the dependencies of the project. To do so, run the following command:
-
-```console
-npm install
-```
-
-This will also index the views and listeners of your application. You can re-index them by running:
-```console
-npm run index
-```
-
-
-To start the JavaScript template just run:
-
+To run the Javascript template just run:
 ```console
 lenra dev
 ```
-
-### Classique client
-
-You can use one of the client libs to create a custom client for your application.
-You can find the client libs here: https://github.com/search?q=topic%3Alenra+topic%3Aclient+topic%3Alib&sort=stargazers&type=repositories
-
-### Lenra client (beta)
 
 You can then access the application by opening [`localhost:4000`](http://localhost:4000) on your web browser. 
 
@@ -104,20 +84,20 @@ Distributed under the **MIT** License. See [LICENSE](./LICENSE) for more informa
 
 Lenra - [@lenra_dev](https://twitter.com/lenra_dev) - contact@lenra.io
 
-Project Link: [https://github.com/lenra-io/template-javascript](https://github.com/lenra-io/template-javascript)
+Project Link: [https://github.com/lenra-io/template-bun-ts](https://github.com/lenra-io/template-bun-ts)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/lenra-io/template-javascript.svg?style=for-the-badge
-[contributors-url]: https://github.com/lenra-io/template-javascript/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/lenra-io/template-javascript.svg?style=for-the-badge
-[forks-url]: https://github.com/lenra-io/template-javascript/network/members
-[stars-shield]: https://img.shields.io/github/stars/lenra-io/template-javascript.svg?style=for-the-badge
-[stars-url]: https://github.com/lenra-io/template-javascript/stargazers
-[issues-shield]: https://img.shields.io/github/issues/lenra-io/template-javascript.svg?style=for-the-badge
-[issues-url]: https://github.com/lenra-io/template-javascript/issues
-[license-shield]: https://img.shields.io/github/license/lenra-io/template-javascript.svg?style=for-the-badge
-[license-url]: https://github.com/lenra-io/template-javascript/blob/master/LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/lenra-io/template-bun-ts.svg?style=for-the-badge
+[contributors-url]: https://github.com/lenra-io/template-bun-ts/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/lenra-io/template-bun-ts.svg?style=for-the-badge
+[forks-url]: https://github.com/lenra-io/template-bun-ts/network/members
+[stars-shield]: https://img.shields.io/github/stars/lenra-io/template-bun-ts.svg?style=for-the-badge
+[stars-url]: https://github.com/lenra-io/template-bun-ts/stargazers
+[issues-shield]: https://img.shields.io/github/issues/lenra-io/template-bun-ts.svg?style=for-the-badge
+[issues-url]: https://github.com/lenra-io/template-bun-ts/issues
+[license-shield]: https://img.shields.io/github/license/lenra-io/template-bun-ts.svg?style=for-the-badge
+[license-url]: https://github.com/lenra-io/template-bun-ts/blob/master/LICENSE

@@ -1,19 +1,26 @@
 {
-  "name": "javascript-template",
+  "name": "bun-js-template",
   "version": "1.0.0",
-  "description": "Lenra's javascript template",
+  "description": "Lenra's javascript template using Bun.sh",
   "type": "module",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node node_modules/@lenra/app/dist/bin/app-lenra.js start",
-    "index": "node node_modules/@lenra/app/dist/bin/app-lenra.js index",
-    "postinstall": "npm run index",
+    "start": "bun node_modules/@lenra/app/dist/bin/app-lenra.js start",
+    "index": "bun node_modules/@lenra/app/dist/bin/app-lenra.js index",
+    "healthcheck": "bun src/healthcheck.ts",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
   "keywords": [],
   "author": "Lenra",
   "license": "MIT",
   "dependencies": {
-    "@lenra/app": "^1.0.0-beta.12"
+    "@lenra/app": "^1.1.0"
+  },
+  "app-lenra": {
+    "app": "app.ts",
+    "indexer": "ts"
+  },
+  "devDependencies": {
+    "bun-types": "^1.0.5-canary.20231007T140129"
   }
 }
