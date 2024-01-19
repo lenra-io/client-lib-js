@@ -40,6 +40,10 @@
   },
   "homepage": "https://github.com/lenra-io/client-lib-js.git#readme",
   "jest": {
-    "preset": "ts-jest"
+    "preset": "ts-jest",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/dist/"
+    ]
   }
 }
