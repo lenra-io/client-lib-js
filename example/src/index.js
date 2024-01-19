@@ -29,7 +29,7 @@ app.connect().then(() => {
             output.textContent = data.value;
             button.onclick = () => {
                 output.classList.add("loading");
-                data.onIncrement.call({value: "custom value"}).then(() => {
+                data.onIncrement({value: "custom value"}).then(() => {
                     output.classList.remove("loading");
                 });
             };

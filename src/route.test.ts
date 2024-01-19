@@ -3,9 +3,16 @@ import LenraRoute, { Listener, parseData } from "./route";
 
 describe("parseData", () => {
     const route: any = { callListener: jest.fn() };
+
+    function expectListener(listener: Listener | any, code: string) {
+        expect(listener).toBeInstanceOf(Function);
+        expect(listener.code).toBe(code);
+    }
+
     it("parse listener", () => {
-        expect(parseData(route, { _type: "listener", code: "test" }))
-            .toEqual(expect.objectContaining({ _type: "listener", code: "test", call: expect.any(Function) }));
+        const listener = { _type: "listener", code: "test" };
+        const parsedListener = parseData(route, listener);
+        expectListener(parsedListener, "test");
     })
 
     it("parse listener in object", () => {
@@ -15,10 +22,12 @@ describe("parseData", () => {
             value: "some value"
         };
         expect(parseData(route, data)).toEqual({
-            listener1: expect.objectContaining({ _type: "listener", code: "test1", call: expect.any(Function) }),
-            listener2: expect.objectContaining({ _type: "listener", code: "test2", call: expect.any(Function) }),
+            listener1: expect.any(Function),
+            listener2: expect.any(Function),
             value: "some value"
         });
+        expectListener(data.listener1, "test1");
+        expectListener(data.listener2, "test2");
     });
 
     it("parse listener in array", () => {
@@ -28,10 +37,12 @@ describe("parseData", () => {
             "some value"
         ];
         expect(parseData(route, data)).toEqual([
-            expect.objectContaining({ _type: "listener", code: "test1", call: expect.any(Function) }),
-            expect.objectContaining({ _type: "listener", code: "test2", call: expect.any(Function) }),
+            expect.any(Function),
+            expect.any(Function),
             "some value"
         ]);
+        expectListener(data[0], "test1");
+        expectListener(data[1], "test2");
     });
 
     it("parse data without listener", () => {
@@ -58,7 +69,7 @@ describe("parseData", () => {
     it("do not stringify call function", () => {
         const data = { _type: "listener", code: "test" };
         const parsedData = parseData(route, data);
-        expect(JSON.stringify(parsedData)).toBe(JSON.stringify(data));
+        expect(JSON.stringify(parsedData)).toBe(JSON.stringify({code: "test"}));
     });
 });
 
@@ -92,8 +103,8 @@ describe("LenraRoute", () => {
     });
 
     it("call listener from Listener.call", () => {
-        const listener:Listener<string> = parseData(route, { _type: "listener", code: "test" });
-        listener.call("some event");
+        const listener: Listener<string> = parseData(route, { _type: "listener", code: "test" });
+        listener("some event");
         expect(callListenerSpy).toHaveBeenCalledWith({ code: "test", event: "some event" });
     });
 });

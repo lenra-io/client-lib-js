@@ -8,9 +8,23 @@ export type ListenerCall<T = any> = {
     event?: T,
 }
 
-export interface Listener<T = any> {
-    code: string;
-    call(event?: T): Promise<void>;
+class ExtensibleFunction extends Function {
+    constructor(f: Function) {
+        super();
+      return Object.setPrototypeOf(f, new.target.prototype);
+    }
+  }
+
+export class Listener<T = any> extends ExtensibleFunction {
+    readonly code: string;
+    constructor(route: LenraRoute, code: string) {
+        super((event?: T) => route.callListener({ code, event }));
+        this.code = code;
+    }
+
+    toJSON() {
+        return {code: this.code};
+    }
 }
 
 export default class LenraRoute<T = any> {
@@ -76,15 +90,7 @@ export function parseData(route: LenraRoute, data: any): any {
             switch (data._type) {
                 case "listener":
                     if ("code" in data && !("call" in data)) {
-                        // create Listener
-                        const code = data.code;
-                        Object.defineProperty(data, "call", {
-                            enumerable: false,
-                            writable: false,
-                            configurable: false,
-                            value: (event?: any) => route.callListener({ code, event })
-                        });
-                        return data;
+                        return new Listener(route, data.code);
                     }
                     break;
                 // add other types here
