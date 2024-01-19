@@ -10,7 +10,7 @@ export type ListenerCall<T = any> = {
 
 export interface Listener<T = any> {
     code: string;
-    call(event?: T):Promise<void>;
+    call(event?: T): Promise<void>;
 }
 
 export default class LenraRoute<T = any> {
@@ -28,7 +28,7 @@ export default class LenraRoute<T = any> {
         this.channel.on("ui", (data) => {
             this.json = data;
             console.log(`New UI from ${this.route}`, this.json);
-            this.parsedJson = parseDataListeners(this, this.json);
+            this.parsedJson = parseData(this, this.json);
 
             this.notify();
         });
@@ -36,7 +36,7 @@ export default class LenraRoute<T = any> {
         this.channel.on("patchUi", (payload) => {
             this.json = applyPatch({ ...this.json }, payload.patch).newDocument as T;
             console.log(`New Patch from ${this.route}`, payload.patch, this.json);
-            this.parsedJson = parseDataListeners(this, this.json);
+            this.parsedJson = parseData(this, this.json);
 
             this.notify();
         });
@@ -70,27 +70,34 @@ export default class LenraRoute<T = any> {
     }
 }
 
-function parseDataListeners(route: LenraRoute, data: any): any {
-    if (data._type === "listener" && "code" in data) {
-        // create Listener
-        if (!("call" in data)) {
-            const code = data.code;
-            Object.defineProperty(data, "call", {
-                enumerable: false,
-                writable: false,
-                configurable: false,
-                value: (event?: any) => route.callListener({code, event})
-            });
+export function parseData(route: LenraRoute, data: any): any {
+    if (data instanceof Object) {
+        if ("_type" in data) {
+            switch (data._type) {
+                case "listener":
+                    if ("code" in data && !("call" in data)) {
+                        // create Listener
+                        const code = data.code;
+                        Object.defineProperty(data, "call", {
+                            enumerable: false,
+                            writable: false,
+                            configurable: false,
+                            value: (event?: any) => route.callListener({ code, event })
+                        });
+                        return data;
+                    }
+                    break;
+                // add other types here
+            }
         }
-        return data;
+        else {
+            for (const [key, value] of Object.entries(data)) {
+                data[key] = parseData(route, value);
+            }
+        }
     }
     if (data instanceof Array) {
-        return data.map((d: any) => parseDataListeners(route, d));
-    }
-    if (data instanceof Object) {
-        for (const [key, value] of Object.entries(data)) {
-            data[key] = parseDataListeners(route, value);
-        }
+        return data.map((d: any) => parseData(route, d));
     }
     return data;
 }
