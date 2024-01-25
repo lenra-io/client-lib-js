@@ -79,8 +79,15 @@ const route = app.route(`/${counter.id}`, (data) => {
 You can also call a listener given by the route:
 
 ```javascript
-button.onclick = () => {
-  route.callListener(data.increment).then(() => {
+// calling directly the listener
+button1.onclick = () => {
+  data.increment().then(() => {
+      // When the listener is finished
+  });
+};
+// or from the route
+button2.onclick = () => {
+  route.callListener(data.decrement).then(() => {
       // When the listener is finished
   });
 };

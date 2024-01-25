@@ -2,25 +2,40 @@ path: app-lenra/
 generator:
   dofigen:
     builders:
-      - from: "docker.io/bitnami/node:18"
+      - name: bun-install
+        from: oven/bun
         workdir: /app
         root:
           script:
-            - chown -R 1000 /app
+            - chown -R 1000:1000 /app
         adds:
-          - "*.json"
+          - package.json
+          - bun.lockb
         script:
-          - npm ci --omit=dev
-    from: builder-0
+          - bun install --production
+      - name: read-access
+        from: bun-install
+        root:
+          script:
+            - chmod +r -R /app
+    from: read-access
     adds:
       - .
     cmd:
-      - npm start
+      - bun
+      - node_modules/@lenra/app/dist/bin/app-lenra.js
+      - start
     envs:
       NODE_ENV: production
     ports:
       - 3000
+    healthcheck:
+      cmd: bun run healthcheck http://localhost:8080/_/health
+      interval: 1s
+      timeout: 1s
+      start: 200ms
     ignores:
       - "**"
-      - "!/*.json"
+      - "!/package.json"
+      - "!/bun.lockb"
       - "!/src/"
