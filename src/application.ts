@@ -49,15 +49,15 @@ export default class LenraApp {
 
     async connect(params?: Record<string, any>) {
         const accessToken = await this.lenraOAuth2Client?.authenticate();
-        return this.connectSocket(accessToken, params);
+        return this.openSocket(accessToken, params);
     }
 
-    connectOauth2() {
+    authenticate() {
         if (!this.lenraOAuth2Client) throw new Error("OAuth2 client is not initialized. Please call the initOAuth2Client function first.");
         return this.lenraOAuth2Client.authenticate();
     }
 
-    connectSocket(accessToken?: string, params?: Record<string, any>) {
+    openSocket(accessToken?: string, params?: Record<string, any>) {
         const socketOpts: LenraSocketOpts = {
             appName: this.lenraAppOpts.appName,
             token: accessToken,
@@ -74,16 +74,20 @@ export default class LenraApp {
         return this.lenraSocket.route(routeName, callback);
     }
 
+    /**
+     * Close the socket connection and logout the user.
+     * @returns 
+     */
     async disconnect() {
-        this.disconnectSocket();
-        return this.disconnectOauth2();
+        this.closeSocket();
+        return this.logout();
     }
 
-    disconnectSocket() {
+    closeSocket() {
         this.lenraSocket?.close();
     }
 
-    async disconnectOauth2() {
+    async logout() {
         await this.lenraOAuth2Client?.disconnect();
     }
 

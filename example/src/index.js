@@ -8,7 +8,7 @@ const app = new LenraApp({
 let authenticated = false;
 
 console.log("connecting...");
-app.connectSocket().then(appConnected);
+app.openSocket().then(appConnected);
 
 const authenticationButton = document.querySelector("body > button");
 authenticationButton.onclick = () => {
