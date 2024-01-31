@@ -1,11 +1,23 @@
 import { LenraApp, Listener } from '@lenra/client';
 
 const app = new LenraApp({
+    appName: "XXX-XXX-XXX",
     clientId: "XXX-XXX-XXX",
 });
 
+let authenticated = false;
+
 console.log("connecting...");
-app.connect().then(() => {
+app.connectSocket().then(appConnected);
+
+const authenticationButton = document.querySelector("body > button");
+authenticationButton.onclick = () => {
+    app.disconnect();
+    authenticated = true;
+    app.connect().then(appConnected);
+};
+
+function appConnected() {
     console.log("Connected !");
 
     const disconnectButton = document.createElement("button");
@@ -19,6 +31,9 @@ app.connect().then(() => {
     const counters = document.querySelectorAll(".counter");
 
     counters.forEach((counter) => {
+        // Filter counters that need authentication
+        if (!authenticated && counter.classList.contains("authenticated")) return;
+
         const button = counter.querySelector("button");
         const output = counter.querySelector("output");
         app.route(`/counter/${counter.id}`, 
@@ -35,4 +50,4 @@ app.connect().then(() => {
             };
         });
     });
-});
+}

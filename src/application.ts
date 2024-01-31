@@ -2,26 +2,39 @@ import LenraOAuth2Client, { LenraOAuth2Opts } from "./oauth2.js"
 import { Callback } from "./route.js";
 import LenraSocket, { LenraSocketOpts } from "./socket.js";
 
-type LenraAppOpts = {
-    appName?: string,
+type OAuth2Opts = {
     clientId: string,
-    redirectUri?: string,
-    scopes?: string[],
+    redirectUri: string,
+    scopes: string[],
+    oauthBaseUri: string,
+}
+
+type LenraAppOpts = Partial<OAuth2Opts> & {
+    appName?: string,
     isProd?: boolean
     socketEndpoint?: string,
-    oauthBaseUri?: string,
 }
 
 export default class LenraApp {
     lenraAppOpts: LenraAppOpts;
-    lenraOAuth2Client: LenraOAuth2Client;
+    lenraOAuth2Client?: LenraOAuth2Client;
     lenraSocket?: LenraSocket;
 
     constructor(opts: LenraAppOpts) {
+        if (!opts.appName && !opts.clientId) throw new Error("At least one of appName or clientId must be provided.");
         opts.oauthBaseUri = opts.oauthBaseUri ?? (opts.isProd ? "https://auth.lenra.io" : "http://localhost:4444");
         opts.redirectUri = opts.redirectUri ?? window.location.origin + "/redirect.html";
         opts.scopes = opts.scopes ?? ["app:websocket"];
         this.lenraAppOpts = opts;
+        if (opts.clientId) this.initOAuth2Client({
+            clientId: opts.clientId,
+            redirectUri: opts.redirectUri,
+            scopes: opts.scopes,
+            oauthBaseUri: opts.oauthBaseUri,
+        });
+    }
+
+    initOAuth2Client(opts: OAuth2Opts) {
         const oAuth2Opts: LenraOAuth2Opts = {
             clientId: opts.clientId,
             redirectUri: opts.redirectUri,
@@ -35,7 +48,16 @@ export default class LenraApp {
     }
 
     async connect(params?: Record<string, any>) {
-        const accessToken = await this.lenraOAuth2Client.authenticate();
+        const accessToken = await this.lenraOAuth2Client?.authenticate();
+        return this.connectSocket(accessToken, params);
+    }
+
+    connectOauth2() {
+        if (!this.lenraOAuth2Client) throw new Error("OAuth2 client is not initialized. Please call the initOAuth2Client function first.");
+        return this.lenraOAuth2Client.authenticate();
+    }
+
+    connectSocket(accessToken?: string, params?: Record<string, any>) {
         const socketOpts: LenraSocketOpts = {
             appName: this.lenraAppOpts.appName,
             token: accessToken,
@@ -53,8 +75,16 @@ export default class LenraApp {
     }
 
     async disconnect() {
+        this.disconnectSocket();
+        return this.disconnectOauth2();
+    }
+
+    disconnectSocket() {
         this.lenraSocket?.close();
-        await this.lenraOAuth2Client.disconnect();
+    }
+
+    async disconnectOauth2() {
+        await this.lenraOAuth2Client?.disconnect();
     }
 
 }

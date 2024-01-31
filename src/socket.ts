@@ -3,7 +3,7 @@ import LenraRoute, { Callback } from './route.js';
 
 export type LenraSocketOpts = {
     appName?: string,
-    token: string,
+    token?: string,
     additionalParams?: Record<string, any>,
     socketEndpoint: string,
 }
