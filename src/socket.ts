@@ -15,12 +15,10 @@ export default class LenraSocket {
     constructor(opts: LenraSocketOpts) {
         this.opts = opts;
 
-        let params = {
-            ...opts.additionalParams,
-            token: opts.token,
-            app: opts.appName,
-        }
-        this.socket = new Socket(opts.socketEndpoint, { params: params });
+        let params: any = {}
+        if (opts.token) params.token = opts.token;
+        if (opts.appName) params.app = opts.appName;
+        this.socket = new Socket(opts.socketEndpoint, { params: { ...opts.additionalParams, ...params } });
     }
 
     connect() {

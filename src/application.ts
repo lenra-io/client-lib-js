@@ -26,12 +26,6 @@ export default class LenraApp {
         opts.redirectUri = opts.redirectUri ?? window.location.origin + "/redirect.html";
         opts.scopes = opts.scopes ?? ["app:websocket"];
         this.lenraAppOpts = opts;
-        if (opts.clientId) this.initOAuth2Client({
-            clientId: opts.clientId,
-            redirectUri: opts.redirectUri,
-            scopes: opts.scopes,
-            oauthBaseUri: opts.oauthBaseUri,
-        });
     }
 
     initOAuth2Client(opts: OAuth2Opts) {
@@ -48,13 +42,20 @@ export default class LenraApp {
     }
 
     async connect(params?: Record<string, any>) {
-        const accessToken = await this.lenraOAuth2Client?.authenticate();
+        const accessToken = await this.authenticate();
         return this.openSocket(accessToken, params);
     }
 
     authenticate() {
-        if (!this.lenraOAuth2Client) throw new Error("OAuth2 client is not initialized. Please call the initOAuth2Client function first.");
-        return this.lenraOAuth2Client.authenticate();
+        if (!this.lenraOAuth2Client) {
+            this.initOAuth2Client({
+                clientId: this.lenraAppOpts.clientId!,
+                redirectUri: this.lenraAppOpts.redirectUri!,
+                scopes: this.lenraAppOpts.scopes!,
+                oauthBaseUri: this.lenraAppOpts.oauthBaseUri!,
+            });
+        };
+        return this.lenraOAuth2Client!.authenticate();
     }
 
     openSocket(accessToken?: string, params?: Record<string, any>) {

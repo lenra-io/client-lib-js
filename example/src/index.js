@@ -16,17 +16,18 @@ authenticationButton.onclick = () => {
     authenticated = true;
     app.connect().then(appConnected);
 };
+const disconnectButton = document.createElement("button");
+disconnectButton.textContent = "Disconnect";
+disconnectButton.onclick = () => {
+    app.disconnect();
+    disconnectButton.style.display = "none";
+};
+document.body.appendChild(disconnectButton);
 
 function appConnected() {
     console.log("Connected !");
 
-    const disconnectButton = document.createElement("button");
-    disconnectButton.textContent = "Disconnect";
-    disconnectButton.onclick = () => {
-        app.disconnect();
-        disconnectButton.remove();
-    };
-    document.body.appendChild(disconnectButton);
+    disconnectButton.style.display = undefined;
 
     const counters = document.querySelectorAll(".counter");
 
@@ -36,18 +37,19 @@ function appConnected() {
 
         const button = counter.querySelector("button");
         const output = counter.querySelector("output");
-        app.route(`/counter/${counter.id}`, 
+        console.log("Open route for counter", counter.id);
+        app.route(`/counter/${counter.id}`,
             /**
              * @param {{value: number, onIncrement: Listener<{value: string}>}} data 
              */
             (data) => {
-            output.textContent = data.value;
-            button.onclick = () => {
-                output.classList.add("loading");
-                data.onIncrement({value: "custom value"}).then(() => {
-                    output.classList.remove("loading");
-                });
-            };
-        });
+                output.textContent = data.value;
+                button.onclick = () => {
+                    output.classList.add("loading");
+                    data.onIncrement({ value: "custom value" }).then(() => {
+                        output.classList.remove("loading");
+                    });
+                };
+            });
     });
 }
