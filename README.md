@@ -60,10 +60,23 @@ const app = new LenraApp({
 });
 ```
 
-Open the websocket connection:
+Authenticate the user and open the websocket connection:
 
 ```javascript
 app.connect();
+```
+
+You also can manage them separatly:
+  
+```javascript
+const token = app.authenticate();
+app.openSocket(token);
+```
+
+Or just open the websocket connection without authentication:
+
+```javascript
+app.openSocket();
 ```
 
 This while automatically start the authentication flow.

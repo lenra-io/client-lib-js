@@ -8,7 +8,8 @@ const manifest: Manifest = {
                 path: "/counter/global",
                 view: View("counter").find(Counter, {
                     "user": "global"
-                }).toJSON()
+                }).toJSON(),
+                roles: ["guest", "user"]
             },
             {
                 path: "/counter/me",
