@@ -8,22 +8,27 @@ export type ListenerCall<T = any> = {
     event?: T,
 }
 
+export interface Listener<T = any> {
+    (event: T): Promise<void>
+    readonly code: string
+}
+
 class ExtensibleFunction extends Function {
     constructor(f: Function) {
         super();
-      return Object.setPrototypeOf(f, new.target.prototype);
+        return Object.setPrototypeOf(f, new.target.prototype);
     }
-  }
+}
 
-export class Listener<T = any> extends ExtensibleFunction {
+class ListenerImpl<T = any> extends ExtensibleFunction {
     readonly code: string;
     constructor(route: LenraRoute, code: string) {
-        super((event?: T) => route.callListener({ code, event }));
+        super((event: T) => route.callListener({ code, event }));
         this.code = code;
     }
 
     toJSON() {
-        return {code: this.code};
+        return { code: this.code };
     }
 }
 
@@ -90,7 +95,7 @@ export function parseData(route: LenraRoute, data: any): any {
             switch (data._type) {
                 case "listener":
                     if ("code" in data && !("call" in data)) {
-                        return new Listener(route, data.code);
+                        return new ListenerImpl(route, data.code);
                     }
                     break;
                 // add other types here
